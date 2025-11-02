@@ -17,7 +17,7 @@ warn() { printf "%b %s\n" "${YELLOW}" "$1" "${RESET}"; }
 error() { printf "%b %s\n" "${RED}" "$1" "${RESET}"; }
 
 echo
-info "🚀 DailyPaper GitHub 部署准备"
+info "🚀 dailyPaper GitHub 部署准备"
 printf '=%.0s' {1..60}
 echo
 
@@ -51,11 +51,11 @@ git add .
 
 echo
 info "💾 提交更改..."
-if git commit -m "Initial commit: DailyPaper - 自动文献汇总工具" 2>/dev/null; then
+if git commit -m "Initial commit: dailyPaper - 自动文献汇总工具" 2>/dev/null; then
 	success "✅ 提交成功"
 else
 	warn "⚠️ 提交未执行（可能没有可提交的更改或用户未设置 git 用户信息）。"
-	echo "你可以手动运行：git commit -m \"Initial commit: DailyPaper - 自动文献汇总工具\""
+	echo "你可以手动运行：git commit -m \"Initial commit: dailyPaper - 自动文献汇总工具\""
 fi
 
 printf '=%.0s' {1..60}
@@ -66,7 +66,7 @@ echo "📋 下一步操作："
 echo
 echo "1️⃣  在 GitHub 上创建新仓库"
 echo "   访问: https://github.com/new"
-echo "   - 仓库名: DailyPaper"
+echo "   - 仓库名: dailyPaper"
 echo "   - 类型: Public"
 echo "   - 不要勾选 'Add a README file'"
 echo
@@ -77,7 +77,7 @@ if [ -n "${username}" ]; then
 	echo
 	echo "3️⃣  要执行的命令："
 	echo
-	echo "git remote add origin https://github.com/${username}/DailyPaper.git"
+	echo "git remote add origin https://github.com/${username}/dailyPaper.git"
 	echo "git branch -M main"
 	echo "git push -u origin main"
 	echo
@@ -87,9 +87,9 @@ if [ -n "${username}" ]; then
 		echo
 		warn "🚀 正在推送到 GitHub..."
 		# 尝试添加远程，若已存在则改为 set-url
-		if ! git remote add origin "https://github.com/${username}/DailyPaper.git" 2>/dev/null; then
+		if ! git remote add origin "https://github.com/${username}/dailyPaper.git" 2>/dev/null; then
 			warn "远程 origin 已存在，尝试更新远程地址。"
-			git remote set-url origin "https://github.com/${username}/DailyPaper.git"
+			git remote set-url origin "https://github.com/${username}/dailyPaper.git"
 		fi
 
 		git branch -M main || true
@@ -99,20 +99,20 @@ if [ -n "${username}" ]; then
 			echo
 			info "🎯 最后一步：配置 GitHub Pages"
 			echo
-			echo "1. 访问: https://github.com/${username}/DailyPaper/settings/pages"
+			echo "1. 访问: https://github.com/${username}/dailyPaper/settings/pages"
 			echo "2. Source 选择: Deploy from a branch"
 			echo "3. Branch 选择: gh-pages 和 / (root)"
 			echo "4. 点击 Save"
 			echo
-			echo "5. 访问: https://github.com/${username}/DailyPaper/settings/actions"
+			echo "5. 访问: https://github.com/${username}/dailyPaper/settings/actions"
 			echo "6. Workflow permissions 选择: Read and write permissions"
 			echo "7. 勾选: Allow GitHub Actions to create and approve pull requests"
 			echo "8. 点击 Save"
 			echo
-			echo "9. 访问: https://github.com/${username}/DailyPaper/actions"
+			echo "9. 访问: https://github.com/${username}/dailyPaper/actions"
 			echo "10. 点击 'Update Papers Daily' > 'Run workflow'"
 			echo
-			success "⏰ 等待 2-3 分钟后，访问你的网站： https://${username}.github.io/DailyPaper/"
+			success "⏰ 等待 2-3 分钟后，访问你的网站： https://${username}.github.io/dailyPaper/"
 			echo
 		else
 			warn "⚠️  推送失败，可能的原因："
