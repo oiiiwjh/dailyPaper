@@ -1,0 +1,7 @@
+.vscode/
+docs/
+docs
+*.html
+.DS_Store
+*.pyc
+__pycache__/

@@ -10,7 +10,7 @@ sources:
       - cs.IR    # Information Retrieval
       - cs.RO    # Robotics
     max_results: 100
-    days_back: 7  # 抓取最近几天的论文
+    days_back: 3  # 抓取最近几天的论文
 
 # 领域分类关键词
 categories:
