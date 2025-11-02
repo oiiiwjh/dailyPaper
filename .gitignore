@@ -1,6 +1,6 @@
 .vscode/
-docs/
-docs
+# docs/
+# docs
 *.html
 .DS_Store
 *.pyc
