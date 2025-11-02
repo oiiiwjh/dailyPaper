@@ -127,3 +127,72 @@ fi
 echo
 info "📖 详细部署说明请查看: DEPLOYMENT.md"
 echo
+
+# ---------- 命令行远程部署 Action ----------
+echo
+read -r -p "是否远程触发 GitHub Actions 工作流 'Update Papers Daily'？(y/n) " doRemote
+if [ "${doRemote}" != "y" ]; then
+    info "跳过远程触发"
+else
+    # 确定仓库信息
+    if [ -z "${username:-}" ]; then
+        read -r -p "请输入 GitHub 仓库所有者（用户名或组织）: " owner
+    else
+        owner="${username}"
+    fi
+    read -r -p "请输入仓库名 (默认: dailyPaper): " repo
+    repo="${repo:-dailyPaper}"
+
+    # 询问要触发的分支
+    read -r -p "要使用的分支 (默认: main): " ref
+    ref="${ref:-main}"
+
+    # 尝试使用 GitHub CLI (gh)
+    if command -v gh >/dev/null 2>&1; then
+        info "检测到 gh CLI，尝试使用 gh 触发 workflow..."
+        # 用户可以输入 workflow 名称或文件名；默认使用 "Update Papers Daily"
+        read -r -p "请输入要触发的 workflow 名称或文件名 (默认: Update Papers Daily): " workflow_identifier
+        workflow_identifier="${workflow_identifier:-Update Papers Daily}"
+
+        if gh auth status >/dev/null 2>&1; then
+            if gh workflow run "${workflow_identifier}" --repo "${owner}/${repo}" --ref "${ref}"; then
+                success "✅ 已通过 gh 触发工作流: ${workflow_identifier}"
+            else
+                error "❌ 使用 gh 触发失败，请检查 workflow 名称或 gh 权限"
+            fi
+        else
+            warn "未登录 gh CLI。你可以运行 'gh auth login' 后重试，或使用个人访问令牌通过 API 触发。"
+        fi
+    else
+        warn "未检测到 gh CLI，使用 GitHub API (需要 Personal Access Token)"
+
+        # 询问 workflow 文件名（workflow_dispatch 需指定 workflow 文件名或 id）
+        read -r -p "请输入 workflow 文件名 (例如: update-papers-daily.yml) : " workflow_file
+        if [ -z "${workflow_file}" ]; then
+            error "未提供 workflow 文件名，无法通过 API 触发"
+        else
+            # 获取 token
+            if [ -z "${GITHUB_TOKEN:-}" ] && [ -z "${GH_TOKEN:-}" ]; then
+                read -r -s -p "请输入你的 GitHub Personal Access Token (至少需要 workflow 触发权限)，回车继续: " input_token
+                echo
+                token="${input_token}"
+            else
+                token="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
+            fi
+
+            if [ -z "${token}" ]; then
+                error "未提供 GitHub Token，取消触发"
+            else
+                api_url="https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflow_file}/dispatches"
+                payload="{\"ref\":\"${ref}\"}"
+                info "正在触发 ${owner}/${repo} 的 ${workflow_file} ..."
+                if curl -sS -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${token}" -H "Content-Type: application/json" -d "${payload}" "${api_url}"; then
+                    success "✅ 已通过 GitHub API 发送 workflow_dispatch 请求 (请在 GitHub Actions 页面查看运行状态)"
+                else
+                    error "❌ 通过 GitHub API 触发失败，请检查仓库、workflow 文件名和 token 权限"
+                fi
+            fi
+        fi
+    fi
+fi
+# -------------------------------------------
