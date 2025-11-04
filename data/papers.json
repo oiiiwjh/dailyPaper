@@ -1,5 +1,30 @@
 [
   {
+    "id": "2510.26082v2",
+    "title": "Beyond the Uncanny Valley: A Mixed-Method Investigation of Anthropomorphism in Protective Responses to Robot Abuse",
+    "authors": [
+      "Fan Yang",
+      "Lingyao Li",
+      "Yaxin Hu",
+      "Michael Rodgers",
+      "Renkai Ma"
+    ],
+    "abstract": "Robots with anthropomorphic features are increasingly shaping how humans\nperceive and morally engage with them. Our research investigates how different\nlevels of anthropomorphism influence protective responses to robot abuse,\nextending the Computers as Social Actors (CASA) and uncanny valley theories\ninto a moral domain. In an experiment, we invite 201 participants to view\nvideos depicting abuse toward a robot with low (Spider), moderate (Two-Foot),\nor high (Humanoid) anthropomorphism. To provide a comprehensive analysis, we\ntriangulate three modalities: self-report surveys measuring emotions and\nuncanniness, physiological data from automated facial expression analysis, and\nqualitative reflections. Findings indicate that protective responses are not\nlinear. The moderately anthropomorphic Two-Foot robot, rated highest in\neeriness and \"spine-tingling\" sensations consistent with the uncanny valley,\nelicited the strongest physiological anger expressions. Self-reported anger and\nguilt are significantly higher for both the Two-Foot and Humanoid robots\ncompared to the Spider. Qualitative findings further reveal that as\nanthropomorphism increases, moral reasoning shifts from technical assessments\nof property damage to condemnation of the abuser's character, while governance\nproposals expand from property law to calls for quasi-animal rights and broader\nsocietal responsibility. These results suggest that the uncanny valley does not\ndampen moral concern but paradoxically heightens protective impulses, offering\ncritical implications for robot design, policy, and future legal frameworks.",
+    "published": "2025-10-30",
+    "updated": "2025-11-01",
+    "categories": [
+      "cs.RO"
+    ],
+    "primary_category": "cs.RO",
+    "pdf_url": "http://arxiv.org/pdf/2510.26082v2",
+    "arxiv_url": "http://arxiv.org/abs/2510.26082v2",
+    "source": "ArXiv",
+    "venue": "cs.RO",
+    "comment": null,
+    "conference": null,
+    "tags": []
+  },
+  {
     "id": "2510.26709v2",
     "title": "An All-Reduce Compatible Top-K Compressor for Communication-Efficient Distributed Learning",
     "authors": [
