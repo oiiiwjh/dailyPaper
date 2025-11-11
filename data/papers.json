@@ -1,5 +1,56 @@
 [
   {
+    "id": "2511.04505v2",
+    "title": "Alternative Fairness and Accuracy Optimization in Criminal Justice",
+    "authors": [
+      "Shaolong Wu",
+      "James Blume",
+      "Geshi Yeung"
+    ],
+    "abstract": "Algorithmic fairness has grown rapidly as a research area, yet key concepts\nremain unsettled, especially in criminal justice. We review group, individual,\nand process fairness and map the conditions under which they conflict. We then\ndevelop a simple modification to standard group fairness. Rather than exact\nparity across protected groups, we minimize a weighted error loss while keeping\ndifferences in false negative rates within a small tolerance. This makes\nsolutions easier to find, can raise predictive accuracy, and surfaces the\nethical choice of error costs. We situate this proposal within three classes of\ncritique: biased and incomplete data, latent affirmative action, and the\nexplosion of subgroup constraints. Finally, we offer a practical framework for\ndeployment in public decision systems built on three pillars: need-based\ndecisions, Transparency and accountability, and narrowly tailored definitions\nand solutions. Together, these elements link technical design to legitimacy and\nprovide actionable guidance for agencies that use risk assessment and related\ntools.",
+    "published": "2025-11-06",
+    "updated": "2025-11-08",
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "cs.CY"
+    ],
+    "primary_category": "cs.LG",
+    "pdf_url": "http://arxiv.org/pdf/2511.04505v2",
+    "arxiv_url": "http://arxiv.org/abs/2511.04505v2",
+    "source": "ArXiv",
+    "venue": "cs.AI",
+    "comment": "In Proceedings of the the 3rd International AI Governance Workshop\n  (AIGOV), AAAI 2026",
+    "conference": "AAAI 2026",
+    "tags": [
+      "Machine Learning"
+    ]
+  },
+  {
+    "id": "2511.04106v2",
+    "title": "Sub-exponential Growth of New Words and Names Online: A Piecewise Power-Law Model",
+    "authors": [
+      "Hayafumi Watanabe"
+    ],
+    "abstract": "The diffusion of ideas and language in society has conventionally been\ndescribed by S-shaped models, such as the logistic curve. However, the role of\nsub-exponential growth -a slower than exponential pattern known in\nepidemiology- has been largely overlooked in broader social phenomena. Here, we\npresent a piecewise power-law model to characterize complex growth curves with\na few parameters. We systematically analyzed a large-scale dataset of\napproximately one billion Japanese blog articles linked to Wikipedia\nvocabulary, and observed consistent patterns in web search trend data (English,\nSpanish, and Japanese). Our analysis of the 2,965 selected items reveals that\nabout 55% (1,625 items) were found to have no abrupt jumps and were well\ncaptured by one or two segments. For single-segment curves, we found that (i)\nthe mode of the shape parameter alpha was near 0.5, indicating prevalent\nsub-exponential growth; (ii) the ultimate diffusion scale is primarily\ndetermined by the growth rate R, with minor contributions from alpha or the\nduration T; and (iii) alpha showed a tendency to vary with the nature of the\ntopic, being smaller for niche/local topics and larger for widely shared ones.\nFurthermore, a micro-behavioral model distinguishing outward contact with\nstrangers from inward interaction within their community suggests that alpha\ncan be interpreted as an index of the preference for outward-oriented\ncommunication. These findings suggest that sub-exponential growth is a common\npattern of social diffusion, and our model provides a practical framework for\nconsistently describing, comparing, and interpreting complex and diverse growth\ncurves.",
+    "published": "2025-11-06",
+    "updated": "2025-11-08",
+    "categories": [
+      "physics.soc-ph",
+      "cs.CL",
+      "cs.CY",
+      "stat.AP"
+    ],
+    "primary_category": "physics.soc-ph",
+    "pdf_url": "http://arxiv.org/pdf/2511.04106v2",
+    "arxiv_url": "http://arxiv.org/abs/2511.04106v2",
+    "source": "ArXiv",
+    "venue": "cs.CL",
+    "comment": null,
+    "conference": null,
+    "tags": []
+  },
+  {
     "id": "2511.04341v2",
     "title": "Monitor-Generate-Verify (MGV): Formalising Metacognitive Theory for Language Model Reasoning",
     "authors": [
@@ -35004,6 +35055,30 @@
     "tags": [
       "Machine Learning"
     ]
+  },
+  {
+    "id": "2510.27141v2",
+    "title": "Compass: General Filtered Search across Vector and Structured Data",
+    "authors": [
+      "Chunxiao Ye",
+      "Xiao Yan",
+      "Eric Lo"
+    ],
+    "abstract": "The increasing prevalence of hybrid vector and relational data necessitates\nefficient, general support for queries that combine high-dimensional vector\nsearch with complex relational filtering. However, existing filtered search\nsolutions are fundamentally limited by specialized indices, which restrict\narbitrary filtering and hinder integration with general-purpose DBMSs. This\nwork introduces \\textsc{Compass}, a unified framework that enables general\nfiltered search across vector and structured data without relying on new index\ndesigns. Compass leverages established index structures -- such as HNSW and IVF\nfor vector attributes, and B+-trees for relational attributes -- implementing a\nprincipled cooperative query execution strategy that coordinates candidate\ngeneration and predicate evaluation across modalities. Uniquely, Compass\nmaintains generality by allowing arbitrary conjunctions, disjunctions, and\nrange predicates, while ensuring robustness even with highly-selective or\nmulti-attribute filters. Comprehensive empirical evaluations demonstrate that\nCompass consistently outperforms NaviX, the only existing performant general\nframework, across diverse hybrid query workloads. It also matches the query\nthroughput of specialized single-attribute indices in their favorite settings\nwith only a single attribute involved, all while maintaining full generality\nand DBMS compatibility. Overall, Compass offers a practical and robust solution\nfor achieving truly general filtered search in vector database systems.",
+    "published": "2025-10-31",
+    "updated": "2025-11-08",
+    "categories": [
+      "cs.DB",
+      "cs.IR"
+    ],
+    "primary_category": "cs.DB",
+    "pdf_url": "http://arxiv.org/pdf/2510.27141v2",
+    "arxiv_url": "http://arxiv.org/abs/2510.27141v2",
+    "source": "ArXiv",
+    "venue": "cs.IR",
+    "comment": null,
+    "conference": null,
+    "tags": []
   },
   {
     "id": "2510.27607v2",
