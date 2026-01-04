@@ -7,6 +7,7 @@
 import arxiv
 import json
 import yaml
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import List, Dict
@@ -27,11 +28,53 @@ class PaperFetcher:
         """初始化"""
         self.config = self.load_config(config_path)
         self.papers = []
+        # Precompile regex patterns for better performance
+        self._compile_venue_patterns()
+        # Precompile category keywords for faster classification
+        self._compile_category_patterns()
         
     def load_config(self, config_path: str) -> dict:
         """加载配置文件"""
         with open(config_path, 'r', encoding='utf-8') as f:
             return yaml.safe_load(f)
+    
+    def _compile_venue_patterns(self):
+        """预编译会议和期刊的正则表达式模式"""
+        # 常见会议列表
+        conferences = [
+            'CVPR', 'ICCV', 'ECCV', 'NeurIPS', 'ICML', 'ICLR', 
+            'ACL', 'EMNLP', 'NAACL', 'AAAI', 'IJCAI', 'KDD',
+            'ICRA', 'IROS', 'CoRL', 'RSS',
+            'SIGIR', 'WWW', 'WSDM', 'RecSys',
+            'SIGMOD', 'VLDB', 'ICDE',
+            'SIGGRAPH', 'ICASSP', 'INTERSPEECH'
+        ]
+        
+        # 常见期刊列表
+        journals = [
+            'Nature', 'Science', 'PAMI', 'TPAMI', 'JMLR', 'IJCV',
+            'IEEE', 'ACM', 'Transactions', 'Journal'
+        ]
+        
+        # 预编译会议模式（会议名 + 年份）
+        self._conference_patterns = []
+        for conf in conferences:
+            # 匹配 "CVPR 2025" 或 "Accepted to CVPR 2025" 等模式
+            pattern_with_year = re.compile(rf'\b{conf}\s*[:\']?\s*(\d{{4}})\b', re.IGNORECASE)
+            pattern_without_year = re.compile(rf'\b{conf}\b', re.IGNORECASE)
+            self._conference_patterns.append((conf, pattern_with_year, pattern_without_year))
+        
+        # 预编译期刊模式
+        self._journal_patterns = [(j, re.compile(rf'\b{j}\b', re.IGNORECASE)) for j in journals]
+    
+    def _compile_category_patterns(self):
+        """预编译分类关键词的正则表达式"""
+        self._category_patterns = {}
+        categories = self.config.get('categories', {})
+        for category_name, category_info in categories.items():
+            keywords = category_info.get('keywords', [])
+            # 将关键词列表转换为小写并存储
+            self._category_patterns[category_name] = [kw.lower() for kw in keywords]
     
     def fetch_arxiv_papers(self) -> List[Dict]:
         """从 ArXiv 抓取论文"""
@@ -118,42 +161,20 @@ class PaperFetcher:
         if 'preprint' in comment.lower():
             return None
         
-        # 常见会议列表
-        conferences = [
-            'CVPR', 'ICCV', 'ECCV', 'NeurIPS', 'ICML', 'ICLR', 
-            'ACL', 'EMNLP', 'NAACL', 'AAAI', 'IJCAI', 'KDD',
-            'ICRA', 'IROS', 'CoRL', 'RSS',
-            'SIGIR', 'WWW', 'WSDM', 'RecSys',
-            'SIGMOD', 'VLDB', 'ICDE',
-            'SIGGRAPH', 'ICASSP', 'INTERSPEECH'
-        ]
-        
-        # 常见期刊列表
-        journals = [
-            'Nature', 'Science', 'PAMI', 'TPAMI', 'JMLR', 'IJCV',
-            'IEEE', 'ACM', 'Transactions', 'Journal'
-        ]
-        
-        # 检查是否包含年份信息（如 CVPR 2025）
-        import re
-        
-        # 匹配模式：会议名 + 年份
-        for conf in conferences:
-            # 匹配 "CVPR 2025" 或 "Accepted to CVPR 2025" 等模式
-            pattern = rf'\b{conf}\s*[:\']?\s*(\d{{4}})\b'
-            match = re.search(pattern, comment, re.IGNORECASE)
+        # 使用预编译的会议模式进行匹配
+        for conf, pattern_with_year, pattern_without_year in self._conference_patterns:
+            match = pattern_with_year.search(comment)
             if match:
                 year = match.group(1)
                 return f"{conf} {year}"
             
             # 匹配只有会议名的情况
-            pattern = rf'\b{conf}\b'
-            if re.search(pattern, comment, re.IGNORECASE):
+            if pattern_without_year.search(comment):
                 return conf
         
-        # 检查期刊
-        for journal in journals:
-            if journal.lower() in comment.lower():
+        # 使用预编译的期刊模式进行匹配
+        for journal, pattern in self._journal_patterns:
+            if pattern.search(comment):
                 # 尝试提取完整的期刊名称（取前50个字符）
                 return comment[:50] if len(comment) > 50 else comment
         
@@ -162,15 +183,16 @@ class PaperFetcher:
     def classify_paper(self, paper: Dict) -> List[str]:
         """根据关键词分类论文"""
         tags = set()
-        text = (paper['title'] + ' ' + paper['abstract']).lower()
+        # Cache the lowercase text to avoid repeated operations
+        text = f"{paper['title']} {paper['abstract']}".lower()
         
-        categories = self.config.get('categories', {})
-        for category_name, category_info in categories.items():
-            keywords = category_info.get('keywords', [])
+        # Use precompiled category patterns
+        for category_name, keywords in self._category_patterns.items():
+            # Early exit once a match is found for this category
             for keyword in keywords:
-                if keyword.lower() in text:
+                if keyword in text:
                     tags.add(category_name)
-                    break
+                    break  # Move to next category once match found
         
         return list(tags)
     

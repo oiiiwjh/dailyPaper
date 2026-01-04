@@ -136,6 +136,11 @@ main {
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
+/* Hide papers with CSS class instead of inline styles for better performance */
+.paper-card.hidden {
+    display: none;
+}
+
 .paper-title {
     font-size: 1.3rem;
     margin-bottom: 0.8rem;

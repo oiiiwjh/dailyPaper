@@ -22,6 +22,9 @@ class HTMLGenerator:
         self.data_path = Path(data_path)
         self.output_dir = Path(output_dir)
         self.papers = []
+        # Track CSS and JS content for change detection
+        self._css_content = None
+        self._js_content = None
         
     def load_papers(self):
         """加载论文数据"""
@@ -127,10 +130,12 @@ class HTMLGenerator:
         if not self.papers:
             return '<p class="no-results">暂无论文数据</p>'
         
+        # Use list comprehension and join for much better performance
         html_parts = []
         for paper in self.papers:
             tags_html = ''.join([f'<span class="tag">{tag}</span>' for tag in paper.get('tags', [])])
-            authors_html = ', '.join(paper['authors'][:5])
+            authors = paper['authors'][:5]
+            authors_html = ', '.join(authors)
             if len(paper['authors']) > 5:
                 authors_html += ' et al.'
             
@@ -181,7 +186,7 @@ class HTMLGenerator:
             """
             html_parts.append(paper_html)
         
-        return '\n'.join(html_parts)
+        return ''.join(html_parts)
     
     def generate_css(self):
         """生成 CSS 样式"""
@@ -321,6 +326,11 @@ main {
 .paper-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* Hide papers with CSS class instead of inline styles for better performance */
+.paper-card.hidden {
+    display: none;
 }
 
 .paper-title {
@@ -463,14 +473,24 @@ footer a {
         css_dir = self.output_dir / "css"
         css_dir.mkdir(parents=True, exist_ok=True)
         
-        with open(css_dir / "style.css", 'w', encoding='utf-8') as f:
+        css_file = css_dir / "style.css"
+        
+        # Only write if content has changed
+        if css_file.exists():
+            with open(css_file, 'r', encoding='utf-8') as f:
+                existing_css = f.read()
+            if existing_css == css:
+                logger.info("CSS 文件未改变，跳过生成")
+                return
+        
+        with open(css_file, 'w', encoding='utf-8') as f:
             f.write(css)
         
         logger.info("生成 CSS 样式文件")
     
     def generate_js(self):
         """生成 JavaScript 文件"""
-        js = """// 筛选和搜索功能
+        js = """// 筛选和搜索功能 - 优化版本
 document.addEventListener('DOMContentLoaded', function() {
     const statusBtns = document.querySelectorAll('.status-btn');
     const categoryBtns = document.querySelectorAll('.category-btn');
@@ -480,6 +500,31 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStatus = 'all';
     let currentCategory = 'all';
     let searchTerm = '';
+    
+    // Cache paper data for better performance
+    const paperCache = [];
+    papers.forEach(paper => {
+        paperCache.push({
+            element: paper,
+            tags: paper.dataset.tags.split(','),
+            status: paper.dataset.status,
+            // Cache lowercase text content once instead of recalculating
+            textContent: paper.textContent.toLowerCase()
+        });
+    });
+    
+    // Debounce function for search input
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
     
     // 发表状态筛选按钮点击事件
     statusBtns.forEach(btn => {
@@ -505,35 +550,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // 搜索输入事件
-    searchInput.addEventListener('input', function() {
+    // 搜索输入事件 - 使用防抖优化
+    searchInput.addEventListener('input', debounce(function() {
         searchTerm = this.value.toLowerCase();
         filterPapers();
-    });
+    }, 300));
     
-    // 筛选论文
+    // 筛选论文 - 优化版本，使用CSS类而非内联样式
     function filterPapers() {
         let visibleCount = 0;
         
-        papers.forEach(paper => {
-            const tags = paper.dataset.tags.split(',');
-            const status = paper.dataset.status;
-            const text = paper.textContent.toLowerCase();
-            
+        paperCache.forEach(paper => {
             // 检查发表状态筛选
-            const matchStatus = currentStatus === 'all' || status === currentStatus;
+            const matchStatus = currentStatus === 'all' || paper.status === currentStatus;
             
             // 检查研究领域筛选
-            const matchCategory = currentCategory === 'all' || tags.includes(currentCategory);
+            const matchCategory = currentCategory === 'all' || paper.tags.includes(currentCategory);
             
-            // 检查搜索关键词
-            const matchSearch = searchTerm === '' || text.includes(searchTerm);
+            // 检查搜索关键词 - 使用缓存的文本内容
+            const matchSearch = searchTerm === '' || paper.textContent.includes(searchTerm);
             
             if (matchStatus && matchCategory && matchSearch) {
-                paper.style.display = 'block';
+                paper.element.classList.remove('hidden');
                 visibleCount++;
             } else {
-                paper.style.display = 'none';
+                paper.element.classList.add('hidden');
             }
         });
         
@@ -560,7 +601,17 @@ document.addEventListener('DOMContentLoaded', function() {
         js_dir = self.output_dir / "js"
         js_dir.mkdir(parents=True, exist_ok=True)
         
-        with open(js_dir / "main.js", 'w', encoding='utf-8') as f:
+        js_file = js_dir / "main.js"
+        
+        # Only write if content has changed
+        if js_file.exists():
+            with open(js_file, 'r', encoding='utf-8') as f:
+                existing_js = f.read()
+            if existing_js == js:
+                logger.info("JavaScript 文件未改变，跳过生成")
+                return
+        
+        with open(js_file, 'w', encoding='utf-8') as f:
             f.write(js)
         
         logger.info("生成 JavaScript 文件")
