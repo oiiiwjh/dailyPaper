@@ -29,7 +29,7 @@ def save_json(data: List[Dict], file_path: str):
 
 
 def deduplicate_papers(papers: List[Dict], key: str = 'id') -> List[Dict]:
-    """去除重复论文"""
+    """去除重复论文 - 优化版本"""
     seen = set()
     unique_papers = []
     
